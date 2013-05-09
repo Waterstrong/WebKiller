@@ -1,0 +1,19 @@
+// InterestingKitSln.cpp : 定义控制台应用程序的入口点。
+//
+
+#include "stdafx.h"
+
+#include <iostream>
+using namespace std;
+int _tmain(int argc, _TCHAR* argv[])
+{
+<<<<<<< HEAD
+	int n;
+	cin>>n;
+	cout<<"Hello World!"<<endl;
+	system("pause");
+=======
+>>>>>>> 9213bab82d945ba04ee9dfce15e5faf81c5bd41b
+	return 0;
+}
+

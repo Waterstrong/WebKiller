@@ -3,54 +3,6 @@
 
 #include "stdafx.h"
 
-
-//************************************
-// @Method   : VrvDeleteFile
-// @FullName : VrvDeleteFile
-// @Access   : public 
-// @Qualifier:
-// @Parameter: LPCSTR lpSrc 传入文件夹
-// @Returns  : DWORD 返回执行代码，0为成功
-// @Brief    : 删除文件
-//************************************
-DWORD VrvDeleteFile(LPCSTR lpSrc) 
-{ 
-	char szFile[MAX_PATH] = {0};
-	lstrcpy(szFile,lpSrc);
-	SHFILEOPSTRUCT shFileOp = {0};
-	shFileOp.fFlags = FOF_NOCONFIRMATION;
-	shFileOp.pFrom = szFile; 
-	shFileOp.pTo = NULL; // 一定NULL
-	shFileOp.wFunc = FO_DELETE; 
-	return SHFileOperation(&shFileOp);
-}
-
-//复制的粘贴
-DWORD VrvCopyFile(LPCSTR lpSrc, LPCSTR lpDst ) 
-{
-	char szFile[MAX_PATH] = {0};
-	lstrcpy(szFile,lpSrc); // 特别重要，否则不成功。
-	SHFILEOPSTRUCT shFileOp = {0};
-	shFileOp.fFlags = FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR;
-	shFileOp.pFrom = szFile;
-	shFileOp.pTo = lpDst;
-	shFileOp.wFunc = FO_COPY;
-	return SHFileOperation(&shFileOp); // return dwError
-} 
-
-//剪贴的粘贴
-DWORD VrvMoveFile(LPCSTR lpSrc, LPCSTR lpDst) 
-{ 
-	char szFile[MAX_PATH] = {0}; 
-	lstrcpy(szFile,lpSrc);
-	SHFILEOPSTRUCT shFileOp = {0}; 
-	shFileOp.fFlags = FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR; 
-	shFileOp.pFrom = szFile; 
-	shFileOp.pTo = lpDst; 
-	shFileOp.wFunc = FO_MOVE;
-	return SHFileOperation(&shFileOp); // return dwError
-} 
-
 // 写入注册表更改开机启动, 返回运行目录
 string WriteRegistry()
 {
@@ -67,6 +19,7 @@ string WriteRegistry()
 	//ch = _tcsrchr(path, _T('\\')); 
 	//strcat_s(sysPath, ch);
 	//strcat_s(sysPath, filePath); // 得到文件新的全路径
+	
 	HKEY hKey; // 写入到注册表，以便开机自动运行
 	// 打开注册表：路径如下HEKY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run
 	RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hKey);
@@ -140,9 +93,22 @@ void SetTargetList(vector<string>& targets, string path)
 // 关闭窗口
 void ForceCloseWindow(HWND hwnd)
 {
+	// 发送退出命令
 	SendMessage(hwnd, WM_CLOSE, 0, 0);
 	DestroyWindow(hwnd);
 	PostMessage(hwnd, WM_QUIT, 0, 0);
+	Sleep(1000);
+	// 强制结束进程
+	DWORD dwProcId = 0;
+	if (GetWindowThreadProcessId(hwnd, &dwProcId))  
+	{       
+		HANDLE hProc = OpenProcess(PROCESS_TERMINATE, FALSE, dwProcId);
+		if (hProc != NULL)
+		{          
+			TerminateProcess(hProc, 0);
+			CloseHandle(hProc); 
+		}
+	}
 }
 
 // 终结目标名单
@@ -261,6 +227,7 @@ bool SafeTimeBucket(vector<TimeInterval> inters)
 	}
 	return false;
 }
+
 int main(int argc, _TCHAR* argv[])
 {
 	string path = WriteRegistry(); // 写入注册表，开机启动

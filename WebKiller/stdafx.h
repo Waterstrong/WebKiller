@@ -10,8 +10,8 @@
 #include <stdio.h>
 #include <tchar.h>
 
-
 #include <afxwin.h>
+#include <Windows.h>
 #include <tlhelp32.h>  
 #include <string>
 #include <iostream>
@@ -21,6 +21,9 @@
 #include <algorithm>
 #include <time.h>
 //#include <shellapi.h>
+#include <afxcoll.h>
+#include <afxsock.h>      // MFC socket extensions 
+#include <afxdtctl.h>     // MFC support for Internet Explorer 4 Common Controls 
 using namespace std;
 
 // TODO: 在此处引用程序需要的其他头文件
