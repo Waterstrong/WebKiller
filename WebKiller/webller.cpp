@@ -90,6 +90,14 @@ void SetTargetList(vector<string>& targets, string path)
 	input.close();
 }
 
+int TickSecond = 0; // 时钟秒数
+// 等待一秒
+void WaitASecond()
+{
+	Sleep(1000); // 每秒监测一次
+	++TickSecond;
+}
+
 // 关闭窗口
 void ForceCloseWindow(HWND hwnd)
 {
@@ -97,7 +105,7 @@ void ForceCloseWindow(HWND hwnd)
 	SendMessage(hwnd, WM_CLOSE, 0, 0);
 	DestroyWindow(hwnd);
 	PostMessage(hwnd, WM_QUIT, 0, 0);
-	Sleep(1000);
+	WaitASecond(); // 等待时间一秒
 	// 强制结束进程
 	DWORD dwProcId = 0;
 	if (GetWindowThreadProcessId(hwnd, &dwProcId))  
@@ -213,10 +221,7 @@ void SetClsName(vector<string>& clsnames, string path)
 bool SafeTimeBucket(vector<TimeInterval> inters)
 {
 	// 获取当前时间
-	time_t now = time(NULL);
-	struct tm fmt;
-	localtime_s(&fmt, &now);
-	int minutes = fmt.tm_hour*60 + fmt.tm_min;
+	int minutes = TickSecond / 60;
 	// 当前时间与设定的时间段比较,如果在时间盒内表明不终结
 	for(vector<TimeInterval>::iterator it = inters.begin(); it != inters.end(); ++it)
 	{
@@ -228,22 +233,66 @@ bool SafeTimeBucket(vector<TimeInterval> inters)
 	return false;
 }
 
+// 时间校准同步
+void SyncTickSecond()
+{
+	// 获取当前时间
+	time_t now = time(NULL);
+	struct tm fmt;
+	localtime_s(&fmt, &now);
+	TickSecond = (fmt.tm_hour*60+fmt.tm_min)*60 + fmt.tm_sec; // 同步
+}
+
+// 判断是否同步的
+bool IsTickSecondSync()
+{
+	// 获取当前时间
+	time_t now = time(NULL);
+	struct tm fmt;
+	localtime_s(&fmt, &now);
+	int sec = (fmt.tm_hour*60+fmt.tm_min)*60 + fmt.tm_sec;
+	if (abs(TickSecond - sec) < SEC_ACC)
+	{
+		TickSecond = sec; // 校准
+		return true;
+	}
+	return false;
+}
+
 int main(int argc, _TCHAR* argv[])
 {
-	string path = WriteRegistry(); // 写入注册表，开机启动
-	vector<string> targetList; // 目标字符串列表
-	vector<TimeInterval> intervals; // 时间段
-	vector<string> clsnames; // 特殊窗口的类名
-	SetTargetList(targetList, path); // 设置目标字符串列表
-	SetTimeInterval(intervals, path); // 设置时间段
-	SetClsName(clsnames, path); // 设置单独处理的句柄
-	while(true)
+ 	string path = WriteRegistry(); // 写入注册表，开机启动
+ 	vector<string> targetList; // 目标字符串列表
+ 	vector<TimeInterval> intervals; // 时间段
+ 	vector<string> clsnames; // 特殊窗口的类名
+ 	SetTargetList(targetList, path); // 设置目标字符串列表
+ 	SetTimeInterval(intervals, path); // 设置时间段
+ 	SetClsName(clsnames, path); // 设置单独处理的句柄
+	SyncTickSecond(); // 校准时间
+	int clockTmp = 0; // 临时时钟
+	bool isSync = true; // 同步标记
+ 	while(true)
 	{
-		if (!SafeTimeBucket(intervals)) // 不在安全时间段内就结束
+		if (isSync) // 如果是同步的就要判断是否在安全时间内
+		{
+			if (!SafeTimeBucket(intervals)) // 不在安全时间段内就结束
+			{
+				TerminateTargets(targetList, clsnames); // 终结目标
+			}
+			if (clockTmp++ % SYNC_PERIOD == 0) // 每一定的周期校准一次
+			{
+				clockTmp = 0; // 置零
+				if (!IsTickSecondSync()) // 判断时钟是否同步
+				{
+					isSync = false;
+				}
+			}
+		}
+		else // 否则直接不用判断全部中断
 		{
 			TerminateTargets(targetList, clsnames); // 终结目标
 		}
-		Sleep(1000); // 每秒监测一次
-	}
+		WaitASecond(); // 等待时间一秒
+ 	}
 	return 0;
 }

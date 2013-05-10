@@ -10,6 +10,8 @@
 #include <stdio.h>
 #include <tchar.h>
 
+#define SEC_ACC 59 // 小于1分钟误差
+#define SYNC_PERIOD 300 // 校准周期(秒)
 #include <afxwin.h>
 #include <Windows.h>
 #include <tlhelp32.h>  
@@ -20,6 +22,7 @@
 #include <iterator> 
 #include <algorithm>
 #include <time.h>
+#include <cmath>
 //#include <shellapi.h>
 #include <afxcoll.h>
 #include <afxsock.h>      // MFC socket extensions 
