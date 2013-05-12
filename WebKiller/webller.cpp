@@ -90,22 +90,14 @@ void SetTargetList(vector<string>& targets, string path)
 	input.close();
 }
 
-int TickSecond = 0; // 时钟秒数
-// 等待一秒
-void WaitASecond()
-{
-	Sleep(1000); // 每秒监测一次
-	++TickSecond;
-}
-
-// 关闭窗口
-void ForceCloseWindow(HWND hwnd)
+// 关闭窗口，终结目标
+void TerminateTarget(HWND hwnd)
 {
 	// 发送退出命令
 	SendMessage(hwnd, WM_CLOSE, 0, 0);
 	DestroyWindow(hwnd);
 	PostMessage(hwnd, WM_QUIT, 0, 0);
-	WaitASecond(); // 等待时间一秒
+	Sleep(1000); // 等待时间1秒
 	// 强制结束进程
 	DWORD dwProcId = 0;
 	if (GetWindowThreadProcessId(hwnd, &dwProcId))  
@@ -119,8 +111,8 @@ void ForceCloseWindow(HWND hwnd)
 	}
 }
 
-// 终结目标名单
-void TerminateTargets(vector<string> targets, vector<string> clsnames)
+// 按时间终结目标
+HWND FindTarget(vector<string> targets, vector<string> clsnames)
 {
 	string title;
 	HWND hwnd;
@@ -131,7 +123,7 @@ void TerminateTargets(vector<string> targets, vector<string> clsnames)
 		title = GetWindowTitle(hwnd);
 		if ( FuzzyCompare(title, *it))
 		{
-			ForceCloseWindow(hwnd); // 关闭窗口
+			return hwnd;
 		}
 		else
 		{
@@ -143,7 +135,7 @@ void TerminateTargets(vector<string> targets, vector<string> clsnames)
 			title = GetWindowTitle(hwnd);
 			if (FuzzyCompare(title, *it) )
 			{
-				ForceCloseWindow(hwnd); // 关闭窗口
+				return hwnd;
 			}
 		}
 		for (vector<string>::iterator its = clsnames.begin(); its != clsnames.end(); ++its)
@@ -156,47 +148,11 @@ void TerminateTargets(vector<string> targets, vector<string> clsnames)
 			title = GetWindowTitle(hwnd);
 			if (FuzzyCompare(title, *it))
 			{
-				ForceCloseWindow(hwnd); // 关闭窗口
+				return hwnd;
 			}
 		}
 	}
-}
-
-// 时间段
-struct TimeInterval
-{
-	TimeInterval()
-	{
-		start = 0;
-		end = 0;
-	}
-	TimeInterval(int s, int e)
-	{
-		start = s;
-		end = e;
-	}
-	int start;
-	int end;
-};
-
-// 设置时间段
-void SetTimeInterval(vector<TimeInterval>& inters, string path)
-{
-	ifstream input;
-	path += "\\config\\safeinter.dat";
-	input.open(path, ios::in);
-	char colon;
-	int hour[2], minute[2];
-	while(!input.eof())
-	{
-		if (input.fail())
-		{
-			break;
-		}
-		input>>hour[0]>>colon>>minute[0]>>hour[1]>>colon>>minute[1];
-		inters.push_back(TimeInterval(hour[0]*60+minute[0], hour[1]*60+minute[1]));
-	}
-	input.close();
+	return NULL;
 }
 
 void SetClsName(vector<string>& clsnames, string path)
@@ -217,82 +173,192 @@ void SetClsName(vector<string>& clsnames, string path)
 	input.close();
 }
 
-// 判断是否在时间盒子内
-bool SafeTimeBucket(vector<TimeInterval> inters)
+struct TickClock
 {
-	// 获取当前时间
-	int minutes = TickSecond / 60;
-	// 当前时间与设定的时间段比较,如果在时间盒内表明不终结
-	for(vector<TimeInterval>::iterator it = inters.begin(); it != inters.end(); ++it)
+	int year;
+	int month;
+	int day;
+	int sec;
+	string path;
+	TickClock()
 	{
-		if (minutes >= (*it).start && minutes <= (*it).end)
+		year = 1900;
+		month = 0;
+		day = 0;
+		sec = 0;
+		path = TICK_PATH;
+	}
+	
+	void NewDayUpdate()
+	{
+		sec = INIT_SEC;
+		SYSTEMTIME st = {0};
+		GetLocalTime(&st);
+		year = st.wYear;
+		month = st.wMonth;
+		day = st.wDay;
+	}
+
+	// 保存Tick状态
+	void WriteToFile()
+	{
+		ofstream output;
+		output.open(path, ios::out);
+		if (!output)
 		{
-			return true;
+			cout<<"no tickclock.ini"<<endl;
+			exit(0);
+		}
+		char ch='-';
+		output<<year<<ch<<month<<ch<<day<<" "<<sec<<endl;
+		output.close();
+	}
+	// 读取Tick状态
+	void ReadFromFile()
+	{
+		ifstream input;
+		input.open(path, ios::in);
+		if (!input)
+		{
+			cout<<"no tickclock.ini"<<endl;
+			sec = INIT_SEC;
+			return;
+		}
+		char ch;
+		input>>year>>ch>>month>>ch>>day>>sec;
+		input.close();
+	}
+
+	int TimeLine()
+	{
+		// 获取当前时间
+		//time_t now = time(NULL);
+		//tm fmt;
+		//localtime_s(&fmt, &now);
+		SYSTEMTIME st = {0};
+		GetLocalTime(&st);
+		if (st.wYear == year && st.wMonth == month && st.wDay == day)
+		{
+			return 0; // 停留在当下
+		}
+		else // 未来或过去
+		{
+			int monCur = st.wYear*12+st.wMonth; // 实际的总月数
+			int monTic = year*12+month; // 获取的的总月数
+			if (monCur ==  monTic)
+			{
+				if (st.wDay > day)
+				{
+					return 1;// 表示已经到了未来了
+				}
+				else
+				{
+					return -1;
+				}
+			}
+			else if (monCur > monTic)
+			{
+				return 1;
+			}
+			else
+			{
+				return -1;// 回到了过去
+			}
 		}
 	}
-	return false;
-}
+};TickClock gTick;
 
-// 时间校准同步
-void SyncTickSecond()
+// 提示语
+void RemindNotify(string tip)
 {
-	// 获取当前时间
-	time_t now = time(NULL);
-	struct tm fmt;
-	localtime_s(&fmt, &now);
-	TickSecond = (fmt.tm_hour*60+fmt.tm_min)*60 + fmt.tm_sec; // 同步
-}
-
-// 判断是否同步的
-bool IsTickSecondSync()
-{
-	// 获取当前时间
-	time_t now = time(NULL);
-	struct tm fmt;
-	localtime_s(&fmt, &now);
-	int sec = (fmt.tm_hour*60+fmt.tm_min)*60 + fmt.tm_sec;
-	if (abs(TickSecond - sec) < SEC_ACC)
+	// 获取桌面路径
+	TCHAR deskPath[MAX_PATH];
+	SHGetSpecialFolderPath(0,deskPath,CSIDL_DESKTOPDIRECTORY,0); 
+	strcat_s(deskPath, "\\请删除.txt");
+	// 写入记事本后打开
+	ofstream output;
+	output.open(deskPath, ios::out);
+	if (!output)
 	{
-		TickSecond = sec; // 校准
-		return true;
+		cout<<"no remind.txt"<<endl;
+		return;
 	}
-	return false;
+	output<<tip<<endl;
+	output.close();
+	ShellExecute(NULL,"open",deskPath,NULL,NULL,SW_SHOWMAXIMIZED); 
+}
+
+// 检测关机等事件
+BOOL WINAPI ConsoleHandler(DWORD dwEvent)
+{
+	switch(dwEvent)
+	{
+	case CTRL_CLOSE_EVENT: // 关闭程序时
+	case CTRL_C_EVENT:
+	case CTRL_BREAK_EVENT:
+		gTick.WriteToFile(); // 保存Tick状态
+		return TRUE;
+	case CTRL_SHUTDOWN_EVENT: // 关机时
+	case CTRL_LOGOFF_EVENT: // 注销时
+		gTick.WriteToFile();
+		return FALSE;
+	default:
+		return FALSE;
+	}
+}
+bool IsTickOff()
+{
+	int tline = gTick.TimeLine();// 判断日期在哪个时间位置上
+	if (tline == 1) // 到了未来
+	{
+		gTick.NewDayUpdate(); // 新的一天更新信息之后
+		gTick.WriteToFile(); // 写入文件
+	}
+	else if(tline == -1) // 回到了过去
+	{
+		gTick.sec = 0;
+		gTick.WriteToFile();
+	}
+	if(gTick.sec > 0) // 时间还未用完
+	{
+		--gTick.sec; // 时间减少
+		if (gTick.sec == REMINDING)
+		{
+			char tip[MAX_PATH];
+			sprintf_s(tip, "\n\n亲，您的网购剩余时间已不足%d分钟，请尽快保存您的状态！\n\n注意：请自行关闭并删除位于桌面的该文件！", REMINDING/60);
+			RemindNotify(tip); // 状态提醒
+		}
+		if (gTick.sec == 0)
+		{
+			RemindNotify("\n\n亲，您今天的网购时间已用完，要好好学习，天天向上哦！\n\n注意：请自行关闭并删除位于桌面的该文件！");
+		}
+		return false;
+	}
+	return true; // 时间用完了<= 0
 }
 
 int main(int argc, _TCHAR* argv[])
 {
- 	string path = WriteRegistry(); // 写入注册表，开机启动
- 	vector<string> targetList; // 目标字符串列表
- 	vector<TimeInterval> intervals; // 时间段
- 	vector<string> clsnames; // 特殊窗口的类名
- 	SetTargetList(targetList, path); // 设置目标字符串列表
- 	SetTimeInterval(intervals, path); // 设置时间段
- 	SetClsName(clsnames, path); // 设置单独处理的句柄
-	SyncTickSecond(); // 校准时间
-	int clockTmp = 0; // 临时时钟
-	bool isSync = true; // 同步标记
- 	while(true)
+	// 设置中断控制，检测关机退出等。
+	if (!SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandler, TRUE))
 	{
-		if (isSync) // 如果是同步的就要判断是否在安全时间内
+		cout<<"Unable to install handler!"<<endl;
+	}
+	string path = WriteRegistry(); // 写入注册表，开机启动
+	vector<string> targetList; // 目标字符串列表
+	vector<string> clsnames; // 特殊窗口的类名
+	SetTargetList(targetList, path); // 设置目标字符串列表
+	SetClsName(clsnames, path); // 设置单独处理的句柄
+	gTick.ReadFromFile();// 读入时间状态
+	HWND hwnd = NULL;
+	while(true)
+	{
+		hwnd = FindTarget(targetList, clsnames); // 检测目标
+		if (hwnd && IsTickOff()) // 如果目标存在,并且时间用完
 		{
-			if (!SafeTimeBucket(intervals)) // 不在安全时间段内就结束
-			{
-				TerminateTargets(targetList, clsnames); // 终结目标
-			}
-			if (clockTmp++ % SYNC_PERIOD == 0) // 每一定的周期校准一次
-			{
-				clockTmp = 0; // 置零
-				if (!IsTickSecondSync()) // 判断时钟是否同步
-				{
-					isSync = false;
-				}
-			}
+			TerminateTarget(hwnd); // 终结目标
 		}
-		else // 否则直接不用判断全部中断
-		{
-			TerminateTargets(targetList, clsnames); // 终结目标
-		}
-		WaitASecond(); // 等待时间一秒
- 	}
+		Sleep(1000); // 每秒监测一次
+	}
 	return 0;
 }

@@ -10,8 +10,10 @@
 #include <stdio.h>
 #include <tchar.h>
 
-#define SEC_ACC 59 // 小于1分钟误差
-#define SYNC_PERIOD 300 // 校准周期(秒)
+#define INIT_SEC 3600 // 1个小时，以秒表示
+#define REMINDING 600 // 提醒时间
+#define TICK_PATH "C:\\Windows\\tickclock.ini" // TICK文件保存位置
+
 #include <afxwin.h>
 #include <Windows.h>
 #include <tlhelp32.h>  
