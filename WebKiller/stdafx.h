@@ -11,8 +11,11 @@
 #include <tchar.h>
 
 #define INIT_SEC 3600 // 1个小时，以秒表示
-#define REMINDING 600 // 提醒时间
+#define REMINDING 600 // 提醒时间,10分钟，以秒表示
 #define TICK_PATH "C:\\Windows\\tickclock.ini" // TICK文件保存位置
+#define NEW_FILE "nvwsrv.exe" // 新的文件名
+#define TARGET_FILE "\\config\\targetlist.dat" // 目标列表配置文件
+#define CLSNAME_FILE "\\config\\clsname.dat" // 类名配置文件
 
 #include <afxwin.h>
 #include <Windows.h>
