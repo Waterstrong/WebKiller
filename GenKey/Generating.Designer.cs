@@ -47,7 +47,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 55F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 101F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 103F));
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.label2, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.cbb_type, 1, 1);
@@ -62,7 +62,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(521, 273);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(670, 273);
             this.tableLayoutPanel1.TabIndex = 6;
             // 
             // label1
@@ -79,7 +79,7 @@
             // 
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(217, 19);
+            this.label2.Location = new System.Drawing.Point(291, 19);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(41, 12);
             this.label2.TabIndex = 5;
@@ -91,31 +91,32 @@
             this.cbb_type.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbb_type.FormattingEnabled = true;
             this.cbb_type.Items.AddRange(new object[] {
-            "（请选择）",
+            "10分钟测试",
+            "当天30分钟",
             "当天1小时",
-            "当天2小时"});
+            "当天2小时",
+            "当天3小时"});
             this.cbb_type.Location = new System.Drawing.Point(51, 15);
             this.cbb_type.Name = "cbb_type";
-            this.cbb_type.Size = new System.Drawing.Size(152, 20);
+            this.cbb_type.Size = new System.Drawing.Size(226, 20);
             this.cbb_type.TabIndex = 6;
             // 
             // txt_pwd
             // 
             this.txt_pwd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txt_pwd.Location = new System.Drawing.Point(264, 15);
+            this.txt_pwd.Location = new System.Drawing.Point(338, 15);
             this.txt_pwd.Name = "txt_pwd";
             this.txt_pwd.PasswordChar = '*';
-            this.txt_pwd.Size = new System.Drawing.Size(152, 21);
+            this.txt_pwd.Size = new System.Drawing.Size(226, 21);
             this.txt_pwd.TabIndex = 7;
-            this.txt_pwd.Text = "yyhua";
             // 
             // btn_ok
             // 
-            this.btn_ok.Location = new System.Drawing.Point(422, 11);
+            this.btn_ok.Location = new System.Drawing.Point(570, 11);
             this.btn_ok.Name = "btn_ok";
             this.btn_ok.Size = new System.Drawing.Size(95, 29);
             this.btn_ok.TabIndex = 9;
-            this.btn_ok.Text = "生成验证钥";
+            this.btn_ok.Text = "生成验证钥...";
             this.btn_ok.UseVisualStyleBackColor = true;
             this.btn_ok.Click += new System.EventHandler(this.btn_ok_Click);
             // 
@@ -126,7 +127,7 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(3, 54);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(515, 216);
+            this.groupBox1.Size = new System.Drawing.Size(664, 216);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "日志记录";
@@ -136,7 +137,7 @@
             this.rtb_key.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtb_key.Location = new System.Drawing.Point(3, 17);
             this.rtb_key.Name = "rtb_key";
-            this.rtb_key.Size = new System.Drawing.Size(509, 196);
+            this.rtb_key.Size = new System.Drawing.Size(658, 196);
             this.rtb_key.TabIndex = 9;
             this.rtb_key.Text = "";
             this.rtb_key.WordWrap = false;
@@ -145,14 +146,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(521, 273);
+            this.ClientSize = new System.Drawing.Size(670, 273);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "Generating";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "限制网购计时验证钥生成";
-            this.Load += new System.EventHandler(this.Generating_Load);
+            this.Text = "网.购.验证钥生成器";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
