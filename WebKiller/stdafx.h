@@ -10,7 +10,8 @@
 #include <stdio.h>
 #include <tchar.h>
 
-#define INIT_SEC 3600 // 1个小时，以秒表示
+#define SAVE_FREQ 300 // 保存频率，一般5分钟保存一次状态
+#define INIT_SEC 3600 // 每天淘宝规定最多60分钟，以秒表示
 #define REMINDING 600 // 提醒时间,10分钟，以秒表示
 #define TICK_PATH "C:\\Windows\\tickclock.ini" // TICK文件保存位置
 #define NEW_FILE "smsync.exe" // 新的文件名

@@ -57,7 +57,7 @@ namespace FreeWeb
             }
             return true;
         }
-        private void Write2TickFile(DateTime dtKey, int ticSec)
+        private void Write2TickFile(DateTime dtKey, int clockSec)
         {
             DateTime dtNow = DateTime.Now;
             DateTime dtTick = new DateTime();
@@ -66,7 +66,7 @@ namespace FreeWeb
                 string strTick = File.ReadAllText(tickpath);                
                 char[] seperator = { ' ' };
                 string[] splitTick = strTick.Split(seperator, StringSplitOptions.RemoveEmptyEntries);
-                dtTick = Convert.ToDateTime(splitTick[0]);
+                dtTick = Convert.ToDateTime(splitTick[0] + " " + splitTick[1]);
                 if (dtTick.ToShortDateString() != dtNow.ToShortDateString())
                 {
                     MessageBox.Show("系统时间可能被更改，日期验证失败！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
@@ -75,7 +75,7 @@ namespace FreeWeb
             }
             catch
             {
-                MessageBox.Show("读取/解析网.购.计时配置文件失败！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show("读取/解析网购计时配置文件失败！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
             
@@ -115,7 +115,7 @@ namespace FreeWeb
             }
             
             // 重新配置网购时长
-            File.WriteAllText(tickpath, dtTick.ToShortDateString() + " " + ticSec.ToString());
+            File.WriteAllText(tickpath, dtNow.ToString() + " " + clockSec.ToString());
             
             try
             {
@@ -125,10 +125,13 @@ namespace FreeWeb
             catch
             {
                 MessageBox.Show("启动失败，找不到服务程序！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            
+            // 删除验证钥文件
+            File.Delete(txt_key.Text.Trim());
+            txt_key.Text = "";
 
-            MessageBox.Show("网购时长设置成功！\n您现在已有" + ticSec / 60 + "分钟的购物时长，祝您购物愉快！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("网购时长设置成功！\n您现在已有" + clockSec / 60 + "分钟的购物时长，祝您购物愉快！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btn_start_Click(object sender, EventArgs e)
@@ -182,29 +185,58 @@ namespace FreeWeb
                 MessageBox.Show("验证钥文件数据被破坏，解析失败！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            int tickSec = 0;
+            int clockSec = 0;
             switch (splitKey[3])
             {
                 case "TENTEST":
-                    tickSec = 605;
+                    clockSec = 605;
                     break;
                 case "HALFHOUR":
-                    tickSec = 1800;
+                    clockSec = 1800;
                     break;
                 case "ONEHOUR":
-                    tickSec = 3600;
+                    clockSec = 3600;
                     break;
                 case "TWOHOUR":
-                    tickSec = 7200;
+                    clockSec = 7200;
                     break;
                 case "THREEHOUR":
-                    tickSec = 10800;
+                    clockSec = 10800;
                     break;
                 default:
                     MessageBox.Show("验证钥类型认证失败！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     return;
             }
-            Write2TickFile(dtKey, tickSec);
+            Write2TickFile(dtKey, clockSec);
+        }
+
+        private void btn_query_Click(object sender, EventArgs e)
+        {
+            if (!File.Exists(tickpath))
+            {
+                MessageBox.Show("网购计时配置文件读取失败，文件不存在！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+            string strTick = File.ReadAllText(tickpath);
+            char[] seperator = { ' ' };
+            string[] splitTick = strTick.Split(seperator, StringSplitOptions.RemoveEmptyEntries);
+            if (splitTick.Length != 3)
+            {
+                MessageBox.Show("网购计时配置文件解析失败，数据不匹配！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }            
+            //try
+            //{
+            //    //DateTime dtTick = Convert.ToDateTime(splitTick[0] + " " + splitTick[1]);
+                
+            //}
+            //catch 
+            //{
+            //    MessageBox.Show("网购计时配置文件解析失败，格式出错！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            //    return;
+            //}
+            int clockSec = Convert.ToInt32(splitTick[2]); 
+            MessageBox.Show("亲，您的网购剩余时间大约还有 "+clockSec/60+" 分钟。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

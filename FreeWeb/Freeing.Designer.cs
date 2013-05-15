@@ -33,6 +33,7 @@
             this.txt_key = new System.Windows.Forms.TextBox();
             this.btn_choose = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.btn_query = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -42,7 +43,7 @@
             this.btn_start.Location = new System.Drawing.Point(169, 116);
             this.btn_start.Name = "btn_start";
             this.btn_start.Size = new System.Drawing.Size(173, 65);
-            this.btn_start.TabIndex = 3;
+            this.btn_start.TabIndex = 1;
             this.btn_start.Text = "猛  击";
             this.btn_start.UseVisualStyleBackColor = true;
             this.btn_start.Click += new System.EventHandler(this.btn_start_Click);
@@ -54,7 +55,7 @@
             this.groupBox1.Location = new System.Drawing.Point(2, 48);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(507, 55);
-            this.groupBox1.TabIndex = 6;
+            this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "验证钥路径";
             // 
@@ -71,7 +72,7 @@
             this.btn_choose.Location = new System.Drawing.Point(442, 19);
             this.btn_choose.Name = "btn_choose";
             this.btn_choose.Size = new System.Drawing.Size(58, 23);
-            this.btn_choose.TabIndex = 2;
+            this.btn_choose.TabIndex = 1;
             this.btn_choose.Text = "选择...";
             this.btn_choose.UseVisualStyleBackColor = true;
             this.btn_choose.Click += new System.EventHandler(this.btn_choose_Click);
@@ -85,11 +86,23 @@
             this.label1.TabIndex = 7;
             this.label1.Text = "说明：每个验证钥只能使用一次，且当天有效。";
             // 
+            // btn_query
+            // 
+            this.btn_query.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_query.Location = new System.Drawing.Point(386, 11);
+            this.btn_query.Name = "btn_query";
+            this.btn_query.Size = new System.Drawing.Size(116, 23);
+            this.btn_query.TabIndex = 2;
+            this.btn_query.Text = "查询剩余网购时长";
+            this.btn_query.UseVisualStyleBackColor = true;
+            this.btn_query.Click += new System.EventHandler(this.btn_query_Click);
+            // 
             // Freeing
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(510, 196);
+            this.ClientSize = new System.Drawing.Size(510, 199);
+            this.Controls.Add(this.btn_query);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btn_start);
@@ -112,6 +125,7 @@
         private System.Windows.Forms.TextBox txt_key;
         private System.Windows.Forms.Button btn_choose;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btn_query;
     }
 }
 

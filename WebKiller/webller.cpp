@@ -6,7 +6,7 @@
 // 写入注册表更改开机启动
 string WriteRegistry()
 {
-	char sysPath[MAX_PATH]; // 系统路径
+	char sysPath[MAX_PATH]={0}; // 系统路径
 	char filePath[MAX_PATH]; // 运行的文件的完整路径
 	HMODULE modH = GetModuleHandle(NULL);
 	GetModuleFileName(modH, filePath, sizeof(filePath)); // 得到当前执行文件的全路径
@@ -72,7 +72,7 @@ HWND GetParentHwnd(HWND hchild)
 
 string GetWindowTitle(HWND hwnd)
 {
-	TCHAR szWindowTitle[50];
+	TCHAR szWindowTitle[100];
 	//获取窗口标题
 	::GetWindowTextA(hwnd, szWindowTitle, sizeof(szWindowTitle));
 	return string(szWindowTitle);
@@ -104,6 +104,20 @@ void SetTargetList(vector<string>& targets, string path)
 		targets.push_back("网购");
 		targets.push_back("购物");
 		targets.push_back("商城");
+		targets.push_back("正品");
+		targets.push_back("女装");
+		targets.push_back("麦包包");
+		targets.push_back("唯品会");
+		targets.push_back("兰缪");
+		//targets.push_back("优惠");
+		//targets.push_back("折扣");
+		//targets.push_back("包邮");
+		//targets.push_back("特卖");
+		//targets.push_back("特惠");
+		//targets.push_back("交易");
+		//targets.push_back("男装");
+		//targets.push_back("凡客");
+		//targets.push_back("银泰");
 		return;
 	}
 	// 输入目标字符串
@@ -196,28 +210,37 @@ void SetClsName(vector<string>& clsnames, string path)
 
 struct TickClock
 {
-	int year;
+	int year; // 年月日
 	int month;
 	int day;
-	int sec;
-	string path;
+	int hour;
+	int minute;
+	int second;
+	int clockSec; // 计时器，以秒为单位
+	string path; // 文件路径
 	TickClock()
 	{
 		year = 1900;
-		month = 0;
-		day = 0;
-		sec = 0;
+		month = 1;
+		day = 1;
+		hour = 0;
+		minute = 0;
+		second = 0;
+		clockSec = 0;
 		path = TICK_PATH;
 	}
-	// 新的一天需要更新
-	void NewDayUpdate()
+	// 新的一天需要更新日期和时间
+	void UpdateDateTime()
 	{
-		sec = INIT_SEC;
+		// 修改为当前时间
 		SYSTEMTIME st = {0};
 		GetLocalTime(&st);
 		year = st.wYear;
 		month = st.wMonth;
 		day = st.wDay;
+		hour = st.wHour;
+		minute = st.wMinute;
+		second = st.wSecond;
 	}
 
 	// 保存Tick状态
@@ -230,8 +253,9 @@ struct TickClock
 			cout<<"no tickclock.ini"<<endl;
 			return;
 		}
-		char ch='-';
-		output<<year<<ch<<month<<ch<<day<<" "<<sec<<endl;
+		output<<year<<"-"<<month<<"-"<<day<<" "
+			<<hour<<":"<<minute<<":"<<second<<" "
+			<<clockSec<<endl;
 		output.close();
 	}
 	// 读取Tick状态
@@ -245,7 +269,9 @@ struct TickClock
 			return;
 		}
 		char ch;
-		input>>year>>ch>>month>>ch>>day>>sec;
+		input>>year>>ch>>month>>ch>>day
+			>>hour>>ch>>minute>>ch>>second
+			>>clockSec;
 		input.close();
 	}
 	// 判断时间线 1未来，0现在，-1过去
@@ -311,49 +337,41 @@ void RemindNotify(string tip)
 	ShellExecute(NULL,"open",deskPath,NULL,NULL,SW_SHOWMAXIMIZED); 
 }
 
-// 检测关机等事件
-BOOL WINAPI ConsoleHandler(DWORD dwEvent)
-{
-	switch(dwEvent)
-	{
-	case CTRL_CLOSE_EVENT: // 关闭程序时
-	case CTRL_C_EVENT:
-	case CTRL_BREAK_EVENT:
-		gTick.WriteToFile(); // 保存Tick状态
-		return TRUE;
-	case CTRL_SHUTDOWN_EVENT: // 关机时
-	case CTRL_LOGOFF_EVENT: // 注销时
-		gTick.WriteToFile();
-		return FALSE;
-	default:
-		return FALSE;
-	}
-}
 bool IsTickOff()
 {
 	int tline = gTick.TimeLine();// 判断日期在哪个时间位置上
 	if (tline == 1) // 到了未来
 	{
-		gTick.NewDayUpdate(); // 新的一天更新信息之后
+		gTick.UpdateDateTime(); // 新的一天更新日期和时间
+		gTick.clockSec = INIT_SEC; // 初始化计时器
 		gTick.WriteToFile(); // 写入文件
 	}
-	else if(tline == -1) // 回到了过去
+	else if(tline == -1 && gTick.clockSec != 0) // 回到了过去
 	{
-		gTick.sec = 0;
+		gTick.clockSec = 0; // 置零
 		gTick.WriteToFile();
 	}
-	if(gTick.sec > 0) // 时间还未用完
+	if(gTick.clockSec > 0) // 时间还未用完
 	{
-		--gTick.sec; // 时间减少
-		if (gTick.sec == REMINDING)
+		--gTick.clockSec; // 时间减少
+		if (gTick.clockSec == REMINDING || gTick.clockSec == 0)
 		{
-			char tip[MAX_PATH];
-			sprintf_s(tip, "\n\n亲，您的网购剩余时间已不足%d分钟，请尽快保存您的状态！\n\n注意：请自行关闭并删除位于桌面的该文件！", REMINDING/60);
+			char tip[MAX_PATH] = {0};
+			SYSTEMTIME st = {0};
+			GetLocalTime(&st);
+			if (gTick.clockSec == 0)
+			{
+				sprintf_s(tip, "%d-%d-%d %d:%d:%d\n\n亲，您今天的网购时间已用完，要好好学习，天天向上哦！\n\n注意：请自行关闭并删除位于桌面的该文件！",
+					st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+				gTick.UpdateDateTime();
+				gTick.WriteToFile();
+			}
+			else
+			{
+				sprintf_s(tip, "%d-%d-%d %d:%d:%d\n\n亲，您的网购剩余时间已不足%d分钟，请尽快保存您的状态！\n\n注意：请自行关闭并删除位于桌面的该文件！",
+					st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, REMINDING/60);
+			}
 			RemindNotify(tip); // 状态提醒
-		}
-		if (gTick.sec == 0)
-		{
-			RemindNotify("\n\n亲，您今天的网购时间已用完，要好好学习，天天向上哦！\n\n注意：请自行关闭并删除位于桌面的该文件！");
 		}
 		return false;
 	}
@@ -362,28 +380,42 @@ bool IsTickOff()
 
 int main(int argc, _TCHAR* argv[])
 {
-	string path =  WriteRegistry(); // 写入开始运行并判断路径
+	string path = WriteRegistry(); // 写入开始运行并判断路径
  	if (path == "exit")
  	{
  		return 0; // 程序结束
  	}
-	// 设置中断控制，检测关机退出等
-	if (!SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandler, TRUE))
-	{
-		cout<<"Unable to install handler!"<<endl;
-	}
 	vector<string> targetList; // 目标字符串列表
 	vector<string> clsnames; // 特殊窗口的类名
 	SetTargetList(targetList, path); // 设置目标字符串列表
 	SetClsName(clsnames, path); // 设置单独处理的句柄
 	gTick.ReadFromFile();// 读入时间状态
 	HWND hwnd = NULL;
+	bool writeFlag = false;
+	int cntSec = 0;
 	while(true)
 	{
 		hwnd = FindTarget(targetList, clsnames); // 检测目标
-		if (hwnd && IsTickOff()) // 如果目标存在,并且时间用完
+		if (hwnd) // 如果目标存在,并且时间用完
 		{
-			TerminateTarget(hwnd); // 终结目标
+			if (IsTickOff())
+			{
+				TerminateTarget(hwnd); // 终结目标
+			}
+			else
+			{
+				writeFlag = true; // 要写入文件了
+			}
+		}
+		if (++cntSec == SAVE_FREQ)
+		{
+			cntSec = 0;
+			if (writeFlag)
+			{
+				writeFlag = false;
+				gTick.UpdateDateTime(); // 更新时间
+				gTick.WriteToFile(); // 写入文件保存状态
+			}
 		}
 		Sleep(1000); // 每秒监测一次
 	}
