@@ -89,11 +89,11 @@
             // btn_query
             // 
             this.btn_query.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_query.Location = new System.Drawing.Point(386, 11);
+            this.btn_query.Location = new System.Drawing.Point(411, 11);
             this.btn_query.Name = "btn_query";
-            this.btn_query.Size = new System.Drawing.Size(116, 23);
+            this.btn_query.Size = new System.Drawing.Size(91, 23);
             this.btn_query.TabIndex = 2;
-            this.btn_query.Text = "查询剩余网购时长";
+            this.btn_query.Text = "查询剩余时长";
             this.btn_query.UseVisualStyleBackColor = true;
             this.btn_query.Click += new System.EventHandler(this.btn_query_Click);
             // 

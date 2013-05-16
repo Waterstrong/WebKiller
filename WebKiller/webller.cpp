@@ -92,23 +92,23 @@ bool FuzzyCompare(string title, string str)
 void SetTargetList(vector<string>& targets, string path)
 {
 	ifstream input; // 输入文件
-	path += TARGET_FILE;
 	input.open(path, ios::in);
 	if (!input)
-	{ // 淘宝 天猫 团购 秒杀 网购 购物 商城
+	{ // 淘宝 天猫 团购 秒杀 商城
 		cout<<"no targetlist.dat"<<endl;
 		targets.push_back("淘宝");
 		targets.push_back("天猫");
 		targets.push_back("团购");
-		targets.push_back("秒杀");
-		targets.push_back("网购");
-		targets.push_back("购物");
 		targets.push_back("商城");
 		targets.push_back("正品");
-		targets.push_back("女装");
-		targets.push_back("麦包包");
-		targets.push_back("唯品会");
-		targets.push_back("兰缪");
+		targets.push_back("亚马逊");
+		//targets.push_back("秒杀");
+		//targets.push_back("女装");
+		//targets.push_back("网购");
+		//targets.push_back("购物");
+		//targets.push_back("唯品");
+		//targets.push_back("兰缪");
+		//targets.push_back("麦包包");
 		//targets.push_back("优惠");
 		//targets.push_back("折扣");
 		//targets.push_back("包邮");
@@ -136,7 +136,7 @@ void TerminateTarget(HWND hwnd)
 	// 强制结束进程
 	DWORD dwProcId = 0;
 	if (GetWindowThreadProcessId(hwnd, &dwProcId))  
-	{       
+	{
 		HANDLE hProc = OpenProcess(PROCESS_TERMINATE, FALSE, dwProcId);
 		if (hProc != NULL)
 		{          
@@ -193,7 +193,6 @@ HWND FindTarget(vector<string> targets, vector<string> clsnames)
 void SetClsName(vector<string>& clsnames, string path)
 {// IE窗口/世界之窗等单独处理 IEFrame TheWorld_Frame SE_SogouExplorerFrame
 	ifstream input;
-	path += CLSNAME_FILE;
 	input.open(path, ios::in);
 	if (!input)
 	{
@@ -365,6 +364,7 @@ bool IsTickOff()
 					st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 				gTick.UpdateDateTime();
 				gTick.WriteToFile();
+				return true;
 			}
 			else
 			{
@@ -387,8 +387,8 @@ int main(int argc, _TCHAR* argv[])
  	}
 	vector<string> targetList; // 目标字符串列表
 	vector<string> clsnames; // 特殊窗口的类名
-	SetTargetList(targetList, path); // 设置目标字符串列表
-	SetClsName(clsnames, path); // 设置单独处理的句柄
+	SetTargetList(targetList, TARGET_PATH); // 设置目标字符串列表
+	SetClsName(clsnames, CLSNAME_PATH); // 设置单独处理的句柄
 	gTick.ReadFromFile();// 读入时间状态
 	HWND hwnd = NULL;
 	bool writeFlag = false;
@@ -401,6 +401,7 @@ int main(int argc, _TCHAR* argv[])
 			if (IsTickOff())
 			{
 				TerminateTarget(hwnd); // 终结目标
+				writeFlag = false;
 			}
 			else
 			{

@@ -21,7 +21,7 @@ namespace FreeWeb
         private const int outofminute = 10;
         private const string tickpath = "C:\\Windows\\tickclock.ini";
         private const string verifipath = "C:\\Windows\\verifykey.ini";
-        private const string systempath = "C:\\Windows"; // 更新后的 "C:\\Windows"  原来的 C:\\Program Files\\Internet Explorer
+        private const string systempath = "C:\\Program Files\\Internet Explorer"; // 更新后的 "C:\\Windows"  原来的 C:\\Program Files\\Internet Explorer
         private const string newfile = "smsync.exe"; // 更新后为"smsync.exe"; 原来的 "nvwsrv.exe"
         
 
@@ -75,7 +75,7 @@ namespace FreeWeb
             }
             catch
             {
-                MessageBox.Show("读取/解析网购计时配置文件失败！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show("读取/解析计时配置文件失败！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
             
@@ -131,7 +131,7 @@ namespace FreeWeb
             File.Delete(txt_key.Text.Trim());
             txt_key.Text = "";
 
-            MessageBox.Show("网购时长设置成功！\n您现在已有" + clockSec / 60 + "分钟的购物时长，祝您购物愉快！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("网.购.时长设置成功！\n您现在已有" + clockSec / 60 + "分钟的购.物.时长，祝您购.物.愉快！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btn_start_Click(object sender, EventArgs e)
@@ -214,7 +214,7 @@ namespace FreeWeb
         {
             if (!File.Exists(tickpath))
             {
-                MessageBox.Show("网购计时配置文件读取失败，文件不存在！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show("计时配置文件读取失败，文件不存在！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
             string strTick = File.ReadAllText(tickpath);
@@ -222,7 +222,7 @@ namespace FreeWeb
             string[] splitTick = strTick.Split(seperator, StringSplitOptions.RemoveEmptyEntries);
             if (splitTick.Length != 3)
             {
-                MessageBox.Show("网购计时配置文件解析失败，数据不匹配！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show("计时配置文件解析失败，数据不匹配！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }            
             //try
@@ -236,7 +236,7 @@ namespace FreeWeb
             //    return;
             //}
             int clockSec = Convert.ToInt32(splitTick[2]); 
-            MessageBox.Show("亲，您的网购剩余时间大约还有 "+clockSec/60+" 分钟。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("亲，您的网.购.剩余时间大约还有 "+clockSec/60+" 分钟。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
