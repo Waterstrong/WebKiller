@@ -228,9 +228,20 @@ namespace FreeWeb
                 MessageBox.Show("计时配置文件解析失败，数据不匹配！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            int clockSec = Convert.ToInt32(splitTick[2]); 
+            DateTime dtTick = new DateTime();
+            try
+            {
+                dtTick = Convert.ToDateTime(splitTick[0] + " " + splitTick[1]);
+
+            }
+            catch
+            {
+                MessageBox.Show("网购计时配置文件解析失败，格式出错！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+            int clockSec = Convert.ToInt32(splitTick[2]);
             DateTime dtNow = DateTime.Now;
-            if (splitTick[0] != string.Format("{0:yyyy-MM-dd}", dtNow))
+            if (dtTick.ToShortDateString() != dtNow.ToShortDateString())
             {
                 MessageBox.Show("您今天可能还未进行过网购，剩余时长仅供参考！\n\n亲，您的网购剩余时间大约还有 " + clockSec / 60 + " 分钟。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -238,16 +249,7 @@ namespace FreeWeb
             {
                 MessageBox.Show("亲，您的网购剩余时间大约还有 " + clockSec / 60 + " 分钟。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            //try
-            //{
-            //    //DateTime dtTick = Convert.ToDateTime(splitTick[0] + " " + splitTick[1]);
-                
-            //}
-            //catch 
-            //{
-            //    MessageBox.Show("网购计时配置文件解析失败，格式出错！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-            //    return;
-            //}
+            
         }
     }
 }
