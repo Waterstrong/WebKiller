@@ -82,7 +82,7 @@ namespace FreeWeb
             // 验证唯一性
             if (!File.Exists(verifipath))
             {
-                File.WriteAllText(verifipath, dtKey.ToString());
+                File.WriteAllText(verifipath, string.Format("{0:yyyy-MM-dd HH:mm:ss}", dtKey));
             }
             else
             {
@@ -90,21 +90,21 @@ namespace FreeWeb
                 char[] seperator = { '#' };
                 string[] splitVerifi = strVerifi.Split(seperator, StringSplitOptions.RemoveEmptyEntries);
                 // 判断验证钥是否当天被使用了，过了当天后自动清除，因为过期了。
-                if (splitVerifi[0].Substring(0, splitVerifi[0].IndexOf(' ')) != dtNow.ToShortDateString())
+                if (splitVerifi[0].Substring(0, splitVerifi[0].IndexOf(' ')) !=  string.Format("{0:yyyy-MM-dd}", dtNow))
                 {
-                    File.WriteAllText(verifipath, dtKey.ToString());
+                    File.WriteAllText(verifipath, string.Format("{0:yyyy-MM-dd HH:mm:ss}", dtKey));
                 }
                 else
                 {
                     foreach (string str in splitVerifi)
                     {
-                        if (str == dtKey.ToString())
+                        if (str == string.Format("{0:yyyy-MM-dd HH:mm:ss}", dtKey))
                         {
                             MessageBox.Show("该验证钥不能重复验证！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                             return;
                         }
                     }
-                    File.AppendAllText(verifipath, "#" + dtKey.ToString());
+                    File.AppendAllText(verifipath, "#" + string.Format("{0:yyyy-MM-dd HH:mm:ss}",dtKey) );
                 }
             }
 
@@ -115,7 +115,7 @@ namespace FreeWeb
             }
             
             // 重新配置网购时长
-            File.WriteAllText(tickpath, dtNow.ToString() + " " + clockSec.ToString());
+            File.WriteAllText(tickpath, string.Format("{0:yyyy-MM-dd HH:mm:ss}", dtNow) + " " + clockSec.ToString()); 
             
             try
             {
@@ -131,7 +131,7 @@ namespace FreeWeb
             File.Delete(txt_key.Text.Trim());
             txt_key.Text = "";
 
-            MessageBox.Show("网.购.时长设置成功！\n您现在已有" + clockSec / 60 + "分钟的购.物.时长，祝您购.物.愉快！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("网购时长设置成功！\n亲，您现在已有" + clockSec / 60 + "分钟的网购时长，祝您网购愉快！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btn_start_Click(object sender, EventArgs e)
@@ -144,7 +144,7 @@ namespace FreeWeb
             }
             if (!File.Exists(txt_key.Text.Trim()))
             {
-                MessageBox.Show("读取验证钥文件失败，找不到文件！\n", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("读取验证钥文件失败，找不到文件！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             string strKey = File.ReadAllText(txt_key.Text.Trim());
@@ -236,7 +236,7 @@ namespace FreeWeb
             //    return;
             //}
             int clockSec = Convert.ToInt32(splitTick[2]); 
-            MessageBox.Show("亲，您的网.购.剩余时间大约还有 "+clockSec/60+" 分钟。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("亲，您的网购剩余时间大约还有 "+clockSec/60+" 分钟。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

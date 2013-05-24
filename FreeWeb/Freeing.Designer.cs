@@ -44,7 +44,7 @@
             this.btn_start.Name = "btn_start";
             this.btn_start.Size = new System.Drawing.Size(173, 65);
             this.btn_start.TabIndex = 1;
-            this.btn_start.Text = "猛  击";
+            this.btn_start.Text = "Lisa一下";
             this.btn_start.UseVisualStyleBackColor = true;
             this.btn_start.Click += new System.EventHandler(this.btn_start_Click);
             // 
@@ -89,11 +89,11 @@
             // btn_query
             // 
             this.btn_query.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_query.Location = new System.Drawing.Point(411, 11);
+            this.btn_query.Location = new System.Drawing.Point(384, 11);
             this.btn_query.Name = "btn_query";
-            this.btn_query.Size = new System.Drawing.Size(91, 23);
+            this.btn_query.Size = new System.Drawing.Size(118, 23);
             this.btn_query.TabIndex = 2;
-            this.btn_query.Text = "查询剩余时长";
+            this.btn_query.Text = "查询剩余网购时长";
             this.btn_query.UseVisualStyleBackColor = true;
             this.btn_query.Click += new System.EventHandler(this.btn_query_Click);
             // 
@@ -110,7 +110,7 @@
             this.MaximizeBox = false;
             this.Name = "Freeing";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "网.购.时长设置（专为Lisa设计，品质保证）";
+            this.Text = "网购时长设置（专为Lisa设计，品质保证）";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

@@ -109,6 +109,7 @@
             this.txt_pwd.PasswordChar = '*';
             this.txt_pwd.Size = new System.Drawing.Size(226, 21);
             this.txt_pwd.TabIndex = 7;
+            this.txt_pwd.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_pwd_KeyPress);
             // 
             // btn_ok
             // 
@@ -152,7 +153,7 @@
             this.MaximizeBox = false;
             this.Name = "Generating";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "网.购.验证钥生成器";
+            this.Text = "网购验证钥生成器";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.groupBox1.ResumeLayout(false);

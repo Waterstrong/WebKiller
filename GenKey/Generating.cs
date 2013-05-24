@@ -64,7 +64,7 @@ namespace GenKey
             ende.RealPwd = str;
             str = ende.Cryptograph;
 
-            string filePath = foldDialog.SelectedPath + "\\key" + string.Format("{0:yyyyMMddHHmmss}", dt) + ".gen";
+            string filePath = foldDialog.SelectedPath + "\\key" + string.Format("{0:yyyyMMddHHmmss}", dt) + "_" + type.ToLower() + ".gen";
             try
             {
                 File.WriteAllText(filePath, str);
@@ -77,6 +77,14 @@ namespace GenKey
             }
             rtb_key.Text += "类型：" + cbb_type.Text + "\r\n";
             rtb_key.Text += "验证钥：" + str + "\r\n\r\n";
+        }
+
+        private void txt_pwd_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 13)
+            {
+                btn_ok_Click(sender, e);
+            }
         }
     }
 }
