@@ -53,7 +53,7 @@ protected:
 	// 删除文件,DWORD 返回执行代码，0为成功
 	DWORD VrvDeleteFile(LPCWSTR lpSrc);
 	// 结束指定进程
-	void KillProcess(CString pro);
+	bool KillProcess(CString pro);
 public:
 	CButton m_btnChoose;
 };

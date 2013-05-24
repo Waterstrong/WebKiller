@@ -168,8 +168,20 @@ void CLisameDlg::OnBnClickedButtonQuery()
 		return;
 	}
 	CString tip;
-	tip.Format(L"亲，您的网购剩余时间大约还有 %d 分钟。", tickClock.ClockSec()/60 );
-	MessageBox(tip, L"提示", MB_ICONINFORMATION|MB_OK);
+	CTime dtNow = CTime::GetCurrentTime();
+	if (tickClock.Year() != dtNow.GetYear() || 
+		tickClock.Month() != dtNow.GetMonth() ||
+		tickClock.Day() != dtNow.GetDay())
+	{
+		tip.Format(L"您今天可能还未进行过网购，剩余时长仅供参考！\n\n亲，您的网购剩余时间大约还有 %d 分钟。", tickClock.ClockSec()/60 );
+		MessageBox(tip, L"提示", MB_ICONWARNING|MB_OK);
+	}
+	else
+	{
+		tip.Format(L"亲，您的网购剩余时间大约还有 %d 分钟。", tickClock.ClockSec()/60 );
+		MessageBox(tip, L"提示", MB_ICONINFORMATION|MB_OK);
+	}
+	
 }
 
 
@@ -289,7 +301,7 @@ bool CLisameDlg::WriteKey2TickFile(CString strKeyTime, int clockSec)
 	CString strTickDate = dtTick.Format("%Y-%m-%d");
 	if (strTickDate != strNowDate)
 	{
-		MessageBox(L"系统时间可能被更改，日期验证失败！", L"提示", MB_ICONSTOP|MB_OK);
+		MessageBox(L"日期验证失败，可能有以下原因：\n1.您今天还未进行过网购\n2.系统日期被非法更改", L"提示", MB_ICONSTOP|MB_OK);
 		return false;
 	}
 	if (!VerifyUniqueKey( strKeyTime, strNowDate ) )
@@ -299,7 +311,12 @@ bool CLisameDlg::WriteKey2TickFile(CString strKeyTime, int clockSec)
 	
 	// 结束程序
 	CString newfile(NEW_FILE);
-	KillProcess(newfile);
+	if (!KillProcess(newfile))
+	{
+		MessageBox(L"结束服务程序失败！", L"提示", MB_ICONWARNING|MB_OK);
+		return false;
+	}
+	
 
 	// 重新配置网购时长
 	tickClock.Year() = dtNow.GetYear();
@@ -378,7 +395,7 @@ bool CLisameDlg::VerifyValidKey(CStringArray& splitKey)
 	CString strNowDate = dtNow.Format("%Y-%m-%d");
 	if (splitKey[2] != strNowDate)
 	{
-		MessageBox(L"验证钥已过期或失效！", L"提示", MB_ICONSTOP|MB_OK);
+		MessageBox(L"日期验证失败，验证钥已过期或未生效！", L"提示", MB_ICONSTOP|MB_OK);
 		return false;
 	}
 	return true;
@@ -412,9 +429,8 @@ bool CLisameDlg::VerifyUniqueKey(CString strKeyTime, CString strNowDate)
 				return false;
 			}
 		}
-		// 判断验证钥是否当天被使用了，过了当天后自动清除，因为过期了
-		else if (splitVerifi[0].SpanExcluding(L" ") != strNowDate)//splitVerifi[0].Left(splitVerifi[0].Find(L' '))
-		{
+		else if (splitVerifi[0].SpanExcluding(L" ") != strNowDate) // 判断验证钥是否当天被使用了，过了当天后自动清除，因为过期了
+		{ //splitVerifi[0].Left(splitVerifi[0].Find(L' '))
 			if (!WriteVerifi2File(strKeyTime))
 			{
 				return false;
@@ -427,7 +443,7 @@ bool CLisameDlg::VerifyUniqueKey(CString strKeyTime, CString strNowDate)
 			{
 				if (splitVerifi[i] == strKeyTime)
 				{
-					MessageBox(L"该验证钥不能重复验证！", L"提示", MB_ICONSTOP|MB_OK);
+					MessageBox(L"该验证钥已使用，不能重复验证！", L"提示", MB_ICONSTOP|MB_OK);
 					return false;
 				}
 			}
@@ -446,7 +462,7 @@ bool CLisameDlg::WriteVerifi2File(CString cstr, bool append)
 	file.Open(path, CFile::modeCreate|CFile::modeNoTruncate|CFile::modeWrite);
 	if (!file.m_pStream)
 	{
-		MessageBox(L"验证文件写入时出错！", L"提示", MB_ICONSTOP|MB_OK);
+		MessageBox(L"验证钥文件写入时出错！", L"提示", MB_ICONSTOP|MB_OK);
 		return false;
 	}
 	if (append == true)
@@ -475,7 +491,7 @@ DWORD CLisameDlg::VrvDeleteFile(LPCWSTR lpSrc)
 
 
 // 结束指定进程
-void CLisameDlg::KillProcess(CString pro)
+bool CLisameDlg::KillProcess(CString pro)
 {
 	WCHAR szTarget[MAX_PATH];
 	lstrcpy(szTarget, pro);//复制
@@ -486,7 +502,7 @@ void CLisameDlg::KillProcess(CString pro)
 	{
 		//MessageBox(0,"系统程序出现异常！\nCreateToolhelp32Snapshot调用失败！","出错信息",MB_OK);
 		CloseHandle(hProcessSnap);//清除snapshot对象
-		return;
+		return false;
 	}
 	pro32.dwSize = sizeof(pro32);
 	BOOL bProcess = Process32First(hProcessSnap , &pro32);//获得进程列表中的第一个进程
@@ -502,4 +518,5 @@ void CLisameDlg::KillProcess(CString pro)
 		bProcess=Process32Next(hProcessSnap , &pro32);//获得进程列表中的下一个进程
 	}
 	CloseHandle(hProcessSnap);//清除snapshot对象
+	return true;
 }

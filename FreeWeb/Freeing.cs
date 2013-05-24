@@ -69,7 +69,7 @@ namespace FreeWeb
                 dtTick = Convert.ToDateTime(splitTick[0] + " " + splitTick[1]);
                 if (dtTick.ToShortDateString() != dtNow.ToShortDateString())
                 {
-                    MessageBox.Show("系统时间可能被更改，日期验证失败！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    MessageBox.Show("日期验证失败，可能有以下原因：\n1.您今天还未进行过网购\n2.系统日期被非法更改", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     return;
                 }
             }
@@ -89,8 +89,11 @@ namespace FreeWeb
                 string strVerifi = File.ReadAllText(verifipath);
                 char[] seperator = { '#' };
                 string[] splitVerifi = strVerifi.Split(seperator, StringSplitOptions.RemoveEmptyEntries);
-                // 判断验证钥是否当天被使用了，过了当天后自动清除，因为过期了。
-                if (splitVerifi[0].Substring(0, splitVerifi[0].IndexOf(' ')) !=  string.Format("{0:yyyy-MM-dd}", dtNow))
+                if (splitVerifi.Length == 0)
+                {
+                    File.WriteAllText(verifipath, string.Format("{0:yyyy-MM-dd HH:mm:ss}", dtKey));
+                }
+                else if (splitVerifi[0].Substring(0, splitVerifi[0].IndexOf(' ')) !=  string.Format("{0:yyyy-MM-dd}", dtNow))  // 判断验证钥是否当天被使用了，过了当天后自动清除，因为过期了。
                 {
                     File.WriteAllText(verifipath, string.Format("{0:yyyy-MM-dd HH:mm:ss}", dtKey));
                 }
@@ -100,7 +103,7 @@ namespace FreeWeb
                     {
                         if (str == string.Format("{0:yyyy-MM-dd HH:mm:ss}", dtKey))
                         {
-                            MessageBox.Show("该验证钥不能重复验证！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                            MessageBox.Show("该验证钥已使用，不能重复验证！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                             return;
                         }
                     }
@@ -176,7 +179,7 @@ namespace FreeWeb
                 DateTime dtNow = DateTime.Now;
                 if (dtKey.ToShortDateString() != dtNow.ToShortDateString())
                 {
-                    MessageBox.Show("验证钥已过期或失效！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    MessageBox.Show("日期验证失败，验证钥已过期或未生效！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     return;
                 }
             }
@@ -224,7 +227,17 @@ namespace FreeWeb
             {
                 MessageBox.Show("计时配置文件解析失败，数据不匹配！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
-            }            
+            }
+            int clockSec = Convert.ToInt32(splitTick[2]); 
+            DateTime dtNow = DateTime.Now;
+            if (splitTick[0] != string.Format("{0:yyyy-MM-dd}", dtNow))
+            {
+                MessageBox.Show("您今天可能还未进行过网购，剩余时长仅供参考！\n\n亲，您的网购剩余时间大约还有 " + clockSec / 60 + " 分钟。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                MessageBox.Show("亲，您的网购剩余时间大约还有 " + clockSec / 60 + " 分钟。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
             //try
             //{
             //    //DateTime dtTick = Convert.ToDateTime(splitTick[0] + " " + splitTick[1]);
@@ -235,8 +248,6 @@ namespace FreeWeb
             //    MessageBox.Show("网购计时配置文件解析失败，格式出错！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             //    return;
             //}
-            int clockSec = Convert.ToInt32(splitTick[2]); 
-            MessageBox.Show("亲，您的网购剩余时间大约还有 "+clockSec/60+" 分钟。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

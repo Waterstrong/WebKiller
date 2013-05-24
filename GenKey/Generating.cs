@@ -57,14 +57,16 @@ namespace GenKey
             {
                 return;
             }
-
             DateTime dt = DateTime.Now;
-            string str = txt_pwd.Text + "#" + string.Format("{0:HH:mm:ss#yyyy-MM-dd}", dt) + "#" + type + "#" + string.Format("{0:HH:mm:ss}", dt);
+            string str = txt_pwd.Text + "#" 
+                + string.Format("{0:HH:mm:ss}", dt) + "#" 
+                + string.Format("{0:yyyy-MM-dd}", dtp_date.Value) + "#" 
+                + type + "#" + string.Format("{0:HH:mm:ss}", dt);
             EnDecryption ende = new EnDecryption();
             ende.RealPwd = str;
             str = ende.Cryptograph;
 
-            string filePath = foldDialog.SelectedPath + "\\key" + string.Format("{0:yyyyMMddHHmmss}", dt) + "_" + type.ToLower() + ".gen";
+            string filePath = foldDialog.SelectedPath + "\\key" + string.Format("{0:yyyyMMdd}", dtp_date.Value) + string.Format("{0:HHmmss}", dt) + "_" + type.ToLower() + ".gen";
             try
             {
                 File.WriteAllText(filePath, str);
