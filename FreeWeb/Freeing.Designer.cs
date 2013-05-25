@@ -45,7 +45,7 @@
             this.btn_start.Name = "btn_start";
             this.btn_start.Size = new System.Drawing.Size(149, 50);
             this.btn_start.TabIndex = 1;
-            this.btn_start.Text = "Lisa一下";
+            this.btn_start.Text = "永华一下";
             this.btn_start.UseVisualStyleBackColor = true;
             this.btn_start.Click += new System.EventHandler(this.btn_start_Click);
             // 
@@ -115,7 +115,7 @@
             this.MaximizeBox = false;
             this.Name = "Freeing";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "网购时长设置（专为Lisa设计，品质保证）";
+            this.Text = "网购时长设置（专为永华设计，品质保证）";
             this.Load += new System.EventHandler(this.Freeing_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

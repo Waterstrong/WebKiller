@@ -96,6 +96,7 @@
   <ItemGroup>
     <None Include="C:\Users\Administrator\Desktop\bg.bmp" />
     <None Include="ReadMe.txt" />
+    <None Include="res\bg.bmp" />
     <None Include="res\Lisame.ico" />
     <None Include="res\Lisame.rc2" />
   </ItemGroup>

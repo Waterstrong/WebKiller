@@ -28,7 +28,7 @@ namespace FreeWeb
         public void Play()
         {
             mciSendString(@"close temp_alias", null, 0, 0);
-            mciSendString(@"open ""G:\\KuGou\\lisame.mp3"" alias temp_alias", null, 0, 0);
+            mciSendString(@"open ""G:\\KuGou\\yyh.mp3"" alias temp_alias", null, 0, 0);
             mciSendString("play temp_alias repeat", null, 0, 0);
         }    
 

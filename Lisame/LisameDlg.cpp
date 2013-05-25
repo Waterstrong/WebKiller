@@ -53,7 +53,7 @@ CLisameDlg::CLisameDlg(CWnd* pParent /*=NULL*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_keypath = _T("");
-	mciSendString(_T("open G:\\KuGou\\lisame.mp3 alias MySong"), NULL, 0, NULL);
+	mciSendString(_T("open G:\\KuGou\\yyh.mp3 alias MySong"), NULL, 0, NULL);
 	mciSendString(_T("play MySong repeat"),NULL,0,NULL);
 }
 
@@ -280,19 +280,19 @@ int CLisameDlg::Type2Clock(CString type)
 	{
 		clockSec = 605;
 	}
-	else if ("HALFHOUR")
+	else if (type == "HALFHOUR")
 	{
 		clockSec = 1800;
 	}
-	else if ("ONEHOUR")
+	else if (type == "ONEHOUR")
 	{
 		clockSec = 3600;
 	}
-	else if ("TWOHOUR")
+	else if (type == "TWOHOUR")
 	{
 		clockSec = 7200;
 	}
-	else if ("THREEHOUR")
+	else if (type == "THREEHOUR")
 	{
 		clockSec = 10800;
 	}
