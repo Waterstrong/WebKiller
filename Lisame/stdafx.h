@@ -49,6 +49,8 @@ using namespace std;
 #define SYSTEM_PATH "C:\\Program Files\\Internet Explorer" // 更新后的 "C:\\Windows"  原来的 C:\\Program Files\\Internet Explorer
 #define VERIFI_PATH "C:\\Windows\\verifykey.ini" // 验证文件路径
 
+#include <MMSystem.h>
+#pragma comment(lib, "Winmm.lib")
 
 #ifdef _UNICODE
 #if defined _M_IX86

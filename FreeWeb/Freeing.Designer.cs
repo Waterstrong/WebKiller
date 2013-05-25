@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Freeing));
             this.btn_start = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.txt_key = new System.Windows.Forms.TextBox();
@@ -39,10 +40,10 @@
             // 
             // btn_start
             // 
-            this.btn_start.Font = new System.Drawing.Font("宋体", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_start.Location = new System.Drawing.Point(169, 116);
+            this.btn_start.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btn_start.Location = new System.Drawing.Point(181, 119);
             this.btn_start.Name = "btn_start";
-            this.btn_start.Size = new System.Drawing.Size(173, 65);
+            this.btn_start.Size = new System.Drawing.Size(149, 50);
             this.btn_start.TabIndex = 1;
             this.btn_start.Text = "Lisa一下";
             this.btn_start.UseVisualStyleBackColor = true;
@@ -50,6 +51,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.BackColor = System.Drawing.Color.Transparent;
             this.groupBox1.Controls.Add(this.txt_key);
             this.groupBox1.Controls.Add(this.btn_choose);
             this.groupBox1.Location = new System.Drawing.Point(2, 48);
@@ -80,6 +82,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Location = new System.Drawing.Point(10, 16);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(257, 12);
@@ -88,20 +91,22 @@
             // 
             // btn_query
             // 
+            this.btn_query.BackColor = System.Drawing.Color.Transparent;
             this.btn_query.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_query.Location = new System.Drawing.Point(384, 11);
             this.btn_query.Name = "btn_query";
             this.btn_query.Size = new System.Drawing.Size(118, 23);
             this.btn_query.TabIndex = 2;
             this.btn_query.Text = "查询剩余网购时长";
-            this.btn_query.UseVisualStyleBackColor = true;
+            this.btn_query.UseVisualStyleBackColor = false;
             this.btn_query.Click += new System.EventHandler(this.btn_query_Click);
             // 
             // Freeing
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(510, 199);
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.ClientSize = new System.Drawing.Size(510, 180);
             this.Controls.Add(this.btn_query);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox1);
@@ -111,6 +116,7 @@
             this.Name = "Freeing";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "网购时长设置（专为Lisa设计，品质保证）";
+            this.Load += new System.EventHandler(this.Freeing_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

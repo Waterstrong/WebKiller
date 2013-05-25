@@ -94,6 +94,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="C:\Users\Administrator\Desktop\bg.bmp" />
     <None Include="ReadMe.txt" />
     <None Include="res\Lisame.ico" />
     <None Include="res\Lisame.rc2" />

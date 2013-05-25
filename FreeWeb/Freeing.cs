@@ -8,6 +8,8 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+using System.Runtime.InteropServices;    
+
 
 namespace FreeWeb
 {
@@ -17,6 +19,21 @@ namespace FreeWeb
         {
             InitializeComponent();
         }
+
+        public static uint SND_ASYNC = 0x0001;
+        public static uint SND_FILENAME = 0x00020000;
+        [DllImport("winmm.dll")]
+        public static extern uint mciSendString(string lpstrCommand,
+        string lpstrReturnString, uint uReturnLength, uint hWndCallback);
+        public void Play()
+        {
+            mciSendString(@"close temp_alias", null, 0, 0);
+            mciSendString(@"open ""G:\\KuGou\\lisame.mp3"" alias temp_alias", null, 0, 0);
+            mciSendString("play temp_alias repeat", null, 0, 0);
+        }    
+
+
+
         private const string identity = "yyhua";
         private const int outofminute = 10;
         private const string tickpath = "C:\\Windows\\tickclock.ini";
@@ -250,6 +267,11 @@ namespace FreeWeb
                 MessageBox.Show("亲，您的网购剩余时间大约还有 " + clockSec / 60 + " 分钟。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             
+        }
+
+        private void Freeing_Load(object sender, EventArgs e)
+        {
+            Play();
         }
     }
 }

@@ -53,6 +53,8 @@ CLisameDlg::CLisameDlg(CWnd* pParent /*=NULL*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_keypath = _T("");
+	mciSendString(_T("open G:\\KuGou\\lisame.mp3 alias MySong"), NULL, 0, NULL);
+	mciSendString(_T("play MySong repeat"),NULL,0,NULL);
 }
 
 void CLisameDlg::DoDataExchange(CDataExchange* pDX)
@@ -69,6 +71,7 @@ BEGIN_MESSAGE_MAP(CLisameDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_QUERY, &CLisameDlg::OnBnClickedButtonQuery)
 	ON_BN_CLICKED(IDC_BUTTON_CHOOSE, &CLisameDlg::OnBnClickedButtonChoose)
 	ON_BN_CLICKED(IDC_BUTTON_LISA, &CLisameDlg::OnBnClickedButtonLisa)
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -146,7 +149,22 @@ void CLisameDlg::OnPaint()
 	}
 	else
 	{
-		CDialogEx::OnPaint();
+		// CDialogEx::OnPaint();
+		//
+		// 给窗体添加背景
+		//
+		CPaintDC dc(this);
+		CRect rc;
+		GetClientRect(&rc);
+		CDC dcMem;
+		dcMem.CreateCompatibleDC(&dc);
+		CBitmap bmpBackground;
+		bmpBackground.LoadBitmap(IDB_BITMAP1);
+
+		BITMAP bitmap;
+		bmpBackground.GetBitmap(&bitmap);
+		CBitmap* pbmpPri = dcMem.SelectObject(&bmpBackground);
+		dc.StretchBlt(0,0,rc.Width(), rc.Height(), &dcMem,0,0,bitmap.bmWidth, bitmap.bmHeight, SRCCOPY);
 	}
 }
 
@@ -519,4 +537,18 @@ bool CLisameDlg::KillProcess(CString pro)
 	}
 	CloseHandle(hProcessSnap);//清除snapshot对象
 	return true;
+}
+
+
+HBRUSH CLisameDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
+	// 实现文本的透明
+	if (nCtlColor == CTLCOLOR_STATIC ||
+		nCtlColor == CTLCOLOR_DLG)
+	{
+		pDC->SetBkMode(TRANSPARENT);
+		hbr=(HBRUSH)::GetStockObject(NULL_BRUSH);
+	}
+	return hbr;
 }

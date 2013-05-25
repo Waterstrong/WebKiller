@@ -22,6 +22,9 @@
     <None Include="res\Lisame.ico">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="C:\Users\Administrator\Desktop\bg.bmp">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lisame.h">

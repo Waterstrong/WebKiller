@@ -56,4 +56,5 @@ protected:
 	bool KillProcess(CString pro);
 public:
 	CButton m_btnChoose;
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };
