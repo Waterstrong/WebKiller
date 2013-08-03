@@ -7,12 +7,13 @@
 
 #include "targetver.h"
 
+#include <windows.h>
 #include <stdio.h>
 #include <tchar.h>
-
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <conio.h>
 using namespace std;
 
 #define TARGET_PATH "C:\\Windows\\targetlist.ini" // 目标列表配置文件
