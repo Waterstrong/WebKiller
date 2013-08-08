@@ -68,6 +68,20 @@ bool WriteFile(string content)
 	return true;
 }
 
+string ReadFile()
+{
+	string str = "--No File! Load Default!--";
+	ifstream input;
+	input.open(TARGET_PATH, ios::in);
+	if (!input)
+	{
+		return str;
+	}
+	getline(input, str);
+	input.close();
+	return str;
+}
+
 void MakeOption()
 {
 	while(true)
@@ -76,7 +90,7 @@ void MakeOption()
 		char option;
 		char confirm;
 		cout<<"\n-----------File Configuration-----------\n"
-			"0.Help    1.Remove    2.Free    3.Custom    4.Default    5.Exit"<<endl;
+			"0.Help    1.Remove    2.Free    3.Custom    4.Default    5.Query    6.Exit"<<endl;
 		cout<<"\nPlease enter the option code: "<<flush;
 		option = getch();
 		putchar(option);
@@ -116,6 +130,19 @@ void MakeOption()
 			str = "淘宝 天猫 团购 商城 正品 亚马逊"; // 默认目标内容
 			break;
 		case '5':
+			CONFIRG_ENTER(confirm, 'q');
+			str = ReadFile() ;
+			if (str == "")
+			{
+				cout<<"Free for shopping!"<<endl;
+			}
+			else
+			{
+				cout<<"Content<"+ str +">"<<endl;
+			}
+			system("pause");
+			continue;
+		case '6':
 			CONFIRG_ENTER(confirm, 'e');
 			cout<<"--->Already exit! Thanks for using!"<<endl;
 			return; // 退出
