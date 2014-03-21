@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lisame", "Lisame\Lisame.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TargCon", "TargCon\TargCon.vcxproj", "{9C51D82A-82A8-40E6-A460-4DF5DCEEAB9C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Prohibit", "Prohibit\Prohibit.vcxproj", "{FDB06B2C-5694-4096-B87C-FEEBB066A780}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -83,6 +85,16 @@ Global
 		{9C51D82A-82A8-40E6-A460-4DF5DCEEAB9C}.Release|Win32.ActiveCfg = Release|Win32
 		{9C51D82A-82A8-40E6-A460-4DF5DCEEAB9C}.Release|Win32.Build.0 = Release|Win32
 		{9C51D82A-82A8-40E6-A460-4DF5DCEEAB9C}.Release|x86.ActiveCfg = Release|Win32
+		{FDB06B2C-5694-4096-B87C-FEEBB066A780}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{FDB06B2C-5694-4096-B87C-FEEBB066A780}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{FDB06B2C-5694-4096-B87C-FEEBB066A780}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FDB06B2C-5694-4096-B87C-FEEBB066A780}.Debug|Win32.Build.0 = Debug|Win32
+		{FDB06B2C-5694-4096-B87C-FEEBB066A780}.Debug|x86.ActiveCfg = Debug|Win32
+		{FDB06B2C-5694-4096-B87C-FEEBB066A780}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{FDB06B2C-5694-4096-B87C-FEEBB066A780}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{FDB06B2C-5694-4096-B87C-FEEBB066A780}.Release|Win32.ActiveCfg = Release|Win32
+		{FDB06B2C-5694-4096-B87C-FEEBB066A780}.Release|Win32.Build.0 = Release|Win32
+		{FDB06B2C-5694-4096-B87C-FEEBB066A780}.Release|x86.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
